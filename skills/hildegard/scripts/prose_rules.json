@@ -190,7 +190,7 @@
       "severity": "warn",
       "why": "A line that announces its news before giving it. People talk this way too, so it never fails a piece alone or beside a plain bold word.",
       "fix": "Say the news.",
-      "patterns": ["the good news is", "the best part is"]
+      "patterns": ["the good news is", "the best part is", "here['’]s what"]
     },
     "weasel": {
       "severity": "warn",
