@@ -191,11 +191,15 @@ Write captions as SRT: at most two lines, about 42 characters a line, on screen 
 pauses. Then burn them in with a plain, readable style:
 
 ```sh
-ffmpeg -i in.mp4 -vf "subtitles=captions.srt:force_style='FontName=Source Sans 3,FontSize=18,PrimaryColour=&H00FFFFFF,OutlineColour=&H80000000,BorderStyle=1,Outline=1.2,Shadow=0,MarginV=36'" \
+# 1920x1080. PlayRes is the video's own size, so every number is in its pixels. Without it libass lays out on a 288-line canvas.
+ffmpeg -i in.mp4 -vf "subtitles=captions.srt:force_style='PlayResX=1920,PlayResY=1080,FontName=Source Sans 3,FontSize=56,PrimaryColour=&H00FFFFFF,OutlineColour=&H80000000,BorderStyle=1,Outline=4,Shadow=0,MarginV=90'" \
   -c:a copy -crf 17 captioned.mp4
+# 1080x1920: higher, and off the right edge, so the app's own buttons and caption don't cover it
+ffmpeg -i in.mp4 -vf "subtitles=captions.srt:force_style='PlayResX=1080,PlayResY=1920,FontName=Source Sans 3,FontSize=64,PrimaryColour=&H00FFFFFF,OutlineColour=&H80000000,BorderStyle=1,Outline=4,Shadow=0,MarginV=420,MarginL=80,MarginR=140'" \
+  -c:a copy -crf 17 captioned-vertical.mp4
 ```
 
-For a vertical video, raise `MarginV` so captions clear the app's own buttons (about 300 at 1920 high). Check the
+Look at one captioned frame at phone size (`-ss <time> -frames:v 1 -vf scale=420:-1`) before you call it done. Check the
 words against the audio; a wrong caption is worse than none. With Hildegard linked, `transcribe` gives the words with
 timings. Without Hildegard, if you can't transcribe the audio, ask your user for the script.
 
