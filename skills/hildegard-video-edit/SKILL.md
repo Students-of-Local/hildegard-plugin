@@ -187,20 +187,21 @@ different offsets rather than letting the subject leave the frame.
 
 ## 6. Captions
 
-Write captions as SRT: at most two lines, about 42 characters a line, on screen at least 1 second, broken at natural
-pauses. Then burn them in with a plain, readable style:
+Write captions as SRT: at most two lines, about 42 characters a line (about 28 on a vertical video, or each line wraps
+into two), on screen at least 1 second, broken at natural pauses. Then burn them in with a plain, readable style:
 
 ```sh
-# 1920x1080. PlayRes is the video's own size, so every number is in its pixels. Without it libass lays out on a 288-line canvas.
-ffmpeg -i in.mp4 -vf "subtitles=captions.srt:force_style='PlayResX=1920,PlayResY=1080,FontName=Source Sans 3,FontSize=56,PrimaryColour=&H00FFFFFF,OutlineColour=&H80000000,BorderStyle=1,Outline=4,Shadow=0,MarginV=90'" \
+# Any 16:9 video. Keep the numbers as written: libass scales from PlayRes to the frame. Without PlayRes it uses a 288-line canvas.
+ffmpeg -i in.mp4 -vf "subtitles=captions.srt:force_style='PlayResX=1920,PlayResY=1080,FontName=Source Sans 3,FontSize=56,PrimaryColour=&H00FFFFFF,OutlineColour=&H80000000,BorderStyle=1,Outline=4,Shadow=0,MarginV=90,MarginL=100,MarginR=100'" \
   -c:a copy -crf 17 captioned.mp4
-# 1080x1920: higher, and off the right edge, so the app's own buttons and caption don't cover it
+# Any 9:16 video: higher, and off the right edge, so the app's own buttons and caption don't cover it
 ffmpeg -i in.mp4 -vf "subtitles=captions.srt:force_style='PlayResX=1080,PlayResY=1920,FontName=Source Sans 3,FontSize=64,PrimaryColour=&H00FFFFFF,OutlineColour=&H80000000,BorderStyle=1,Outline=4,Shadow=0,MarginV=420,MarginL=80,MarginR=140'" \
   -c:a copy -crf 17 captioned-vertical.mp4
 ```
 
-Look at one captioned frame at phone size (`-ss <time> -frames:v 1 -vf scale=420:-1`) before you call it done. Check the
-words against the audio; a wrong caption is worse than none. With Hildegard linked, `transcribe` gives the words with
+For another shape, set PlayRes to the video's size and scale the font size, outline and margins to match. Look at one
+captioned frame at phone size before you call it done:
+`ffmpeg -ss <time> -i captioned-vertical.mp4 -frames:v 1 -vf scale=420:-1 caption-check.png`. Check the words against the audio; a wrong caption is worse than none. With Hildegard linked, `transcribe` gives the words with
 timings. Without Hildegard, if you can't transcribe the audio, ask your user for the script.
 
 ## 7. Sound
